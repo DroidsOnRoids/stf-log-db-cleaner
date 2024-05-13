@@ -1,0 +1,17 @@
+[Unit]
+Description=STF rethinkdb log table service cleaner
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/environment
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/docker kill %p
+ExecStartPre=-/usr/bin/docker rm %p
+ExecStart=/usr/bin/docker run --rm \
+  -e HOST=localhost -e PORT=28015 -e MAX_AGE_MILLIS=864000000 \
+  --name %p \
+  --net host \
+  stf-log-db-cleaner
+
